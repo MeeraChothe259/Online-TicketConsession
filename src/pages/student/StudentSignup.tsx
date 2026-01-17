@@ -35,8 +35,8 @@ export const StudentSignup: React.FC = () => {
         password: formData.password
       });
       navigate('/student/login');
-    } catch (err) {
-      setError('Sign up failed. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Sign up failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -172,7 +172,7 @@ export const StudentSignup: React.FC = () => {
                 Sign in here
               </Link>
             </p>
-            
+
             <Link
               to="/"
               className="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors"

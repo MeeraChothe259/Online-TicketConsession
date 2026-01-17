@@ -57,11 +57,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .eq('email', email)
           .single();
 
-        if (error || !data) {
+        // Check if user exists and password matches
+        if (error || !data || data.password_hash !== password) {
           throw new Error('Invalid credentials');
         }
 
-        // In production, you'd hash and compare passwords properly
         const userData: User = {
           id: data.id,
           email: data.email,
@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           roll_number: data.roll_number,
           type: 'student'
         };
-        
+
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
       } else {
@@ -79,7 +79,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .eq('username', email)
           .single();
 
-        if (error || !data) {
+        // Check if user exists and password matches
+        if (error || !data || data.password_hash !== password) {
           throw new Error('Invalid credentials');
         }
 
@@ -88,12 +89,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           username: data.username,
           type: 'admin'
         };
-        
+
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
       }
     } catch (error) {
-      throw new Error('Sign in failed');
+      console.error("Login error:", error);
+      throw error;
     }
   };
 
@@ -109,10 +111,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }]);
 
       if (error) {
-        throw new Error('Sign up failed');
+        console.error('Supabase Error:', error);
+        throw new Error(error.message);
       }
-    } catch (error) {
-      throw new Error('Sign up failed');
+    } catch (error: any) {
+      console.error('Signup Error:', error);
+      throw new Error(error.message || 'Sign up failed');
     }
   };
 
